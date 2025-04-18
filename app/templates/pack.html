@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block content %}
+    {% if travel_pack %}
+        <h1>{{ travel_pack[0].plan.name }} by {{ travel_pack[0].plan.owner }}</h1>
+        <p>Time Needed: {{ travel_pack[0].plan.time_needed }}</p>
+        <p>Budget: {{ travel_pack[0].plan.budget }}</p>
+        <p>Group Recommendation: {{ travel_pack[0].plan.group_rec }}</p>
+        <p>Destination Plan: {{ travel_pack[0].plan.destination_plan }}</p>
+
+        <h2>Activities:</h2>
+        <ul>
+        {% for activity in travel_pack %}
+            <li>{{ activity.active.name }} at {{ activity.active.establishment }}</li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>No travel plan found.</p>
+    {% endif %}
+{% endblock %}

@@ -17,10 +17,10 @@ class LoginForm(FlaskForm):
 
 class RegistrationForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
-    email = StringField('Email', validators=[DataRequired(), Email()])
     password = PasswordField('Password', validators=[DataRequired()])
     password2 = PasswordField(
         'Repeat Password', validators=[DataRequired(), EqualTo('password')])
+    about_me = StringField('About me')
     submit = SubmitField('Register')
 
     def validate_username(self, username):
@@ -28,12 +28,6 @@ class RegistrationForm(FlaskForm):
             User.username == username.data))
         if user is not None:
             raise ValidationError('Please use a different username.')
-
-    def validate_email(self, email):
-        user = db.session.scalar(sa.select(User).where(
-            User.email == email.data))
-        if user is not None:
-            raise ValidationError('Please use a different email address.')
 
 
 class ResetPasswordRequestForm(FlaskForm):
