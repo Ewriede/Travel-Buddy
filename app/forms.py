@@ -1,11 +1,11 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField, \
-    TextAreaField
+    TextAreaField, SelectMultipleField, SelectField
 from wtforms.validators import ValidationError, DataRequired, Email, EqualTo, \
     Length
 import sqlalchemy as sa
 from app import db
-from app.models import User
+from app.models import User, Destination, Activities, ActivityToPlan
 
 
 class LoginForm(FlaskForm):
@@ -67,3 +67,15 @@ class PostForm(FlaskForm):
     post = TextAreaField('Say something', validators=[
         DataRequired(), Length(min=1, max=140)])
     submit = SubmitField('Submit')
+
+
+class PlanCreateForm(FlaskForm):
+    name = StringField("Plan Name", validators=[DataRequired()])
+    time_needed = StringField("Time Needed", validators=[DataRequired()])
+    budget = StringField("Budget", validators=[DataRequired()])
+    group_rec = StringField("Group Recommendation", validators=[DataRequired()])
+
+    destination = SelectField("Destination", coerce=int, validators=[DataRequired()])
+    activities = SelectMultipleField("Choose Activities", coerce=int, validators=[DataRequired()])
+
+    submit = SubmitField("Create Pack")

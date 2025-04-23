@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block content %}
+  <h2>Create a New Travel Plan</h2>
+  <form method="POST">
+    <input name="name" placeholder="Plan Name" required><br>
+    <input name="budget" placeholder="Budget" required><br>
+    <input name="time_needed" placeholder="Time Needed" required><br>
+    <input name="group_rec" placeholder="Group Size" required><br>
+
+    <label>Destination:</label>
+    <select name="destination" id="destination">
+        {% for dest in destinations %}
+        <option value="{{ dest.id }}">{{ dest.name }}</option>
+        {% endfor %}
+    </select><br>
+
+    <div id="activity-fields">
+        <select name="activities">
+        </select>
+    </div>
+
+    <button type="button" id="add-activity">Add Another Activity</button><br><br>
+    <button type="submit">Submit</button>
+</form>
+
+<script>
+let activityOptions = [];
+
+document.getElementById("destination").addEventListener("change", function () {
+    const id = this.value;
+    fetch(`/get_activities/${id}`)
+        .then(response => response.json())
+        .then(data => {
+            activityOptions = data;
+            const select = document.querySelector("select[name='activities']");
+            select.innerHTML = '';
+            data.forEach(a => {
+                const opt = document.createElement('option');
+                opt.value = a.id;
+                opt.textContent = a.name;
+                select.appendChild(opt);
+            });
+        });
+});
+
+document.getElementById("add-activity").addEventListener("click", () => {
+    const container = document.getElementById("activity-fields");
+    const select = document.createElement("select");
+    select.name = "activities";
+    activityOptions.forEach(a => {
+        const opt = document.createElement('option');
+        opt.value = a.id;
+        opt.textContent = a.name;
+        select.appendChild(opt);
+    });
+    container.appendChild(select);
+});
+</script>
+{% endblock %}

@@ -1,10 +1,10 @@
 from datetime import datetime, timezone
 from urllib.parse import urlsplit
-from flask import render_template, flash, redirect, url_for, request
+from flask import render_template, flash, redirect, url_for, request, jsonify
 from flask_login import login_user, logout_user, current_user, login_required
 import sqlalchemy as sa
 from app import app, db
-from app.forms import LoginForm, RegistrationForm, EditProfileForm, \
+from app.forms import LoginForm, RegistrationForm, PlanCreateForm, EditProfileForm, \
     EmptyForm, PostForm, ResetPasswordRequestForm, ResetPasswordForm
 from app.models import User, Travelplan, Destination, Activities, ActivityToPlan
 
@@ -133,3 +133,45 @@ def login():
 def logout():
     logout_user()
     return redirect(url_for('index'))
+
+@app.route('/get_activities/<int:destination_id>')
+def get_activities(destination_id):
+    activities = Activities.query.filter_by(destination_id=destination_id).all()
+    return jsonify([{"id": a.id, "name": a.name} for a in activities])
+
+@app.route('/create_pack', methods=['GET', 'POST'])
+def create_pack():
+    destinations = Destination.query.all()
+
+    if request.method == 'POST':
+        name = request.form['name']
+        budget = request.form['budget']
+        time_needed = request.form['time_needed']
+        group_rec = request.form['group_rec']
+        destination_id = request.form['destination']
+        activity_ids = request.form.getlist('activities')
+
+        user = db.session.get(User, 1)
+
+        new_plan = Travelplan(
+            name=name,
+            budget=budget,
+            time_needed=time_needed,
+            group_rec=group_rec,
+            owner=user,
+            destination_id=destination_id
+        )
+        db.session.add(new_plan)
+        db.session.commit()
+
+        for activity_id in activity_ids:
+            activity = db.session.get(Activities, int(activity_id))
+            if activity:
+                join = ActivityToPlan(plan=new_plan, active=activity)
+                db.session.add(join)
+
+        db.session.commit()
+        flash('Plan added successfully.')
+        return redirect(url_for('index'))
+
+    return render_template('create_package.html', destinations=destinations)
