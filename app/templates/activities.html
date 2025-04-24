@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Activities</h1>
+
+    {% for activity in activities %}
+        <a href="{{ url_for('activity', active=activity.id) }}">{{ activity.name }} at {{ activity.establishment }}</a><br>
+    {% endfor %}
+{% endblock %}

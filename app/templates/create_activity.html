@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block content %}
+  <h2>Create a New Travel Plan</h2>
+  <form method="POST">
+    <input name="name" placeholder="Activity Name" required><br>
+    <input name="establishment" placeholder="Establishment" required><br>
+    <input name="description" placeholder="Description" required><br>
+
+    <label>Destination:</label>
+    <select name="destination" id="destination">
+        {% for dest in destinations %}
+        <option value="{{ dest.id }}">{{ dest.name }}</option>
+        {% endfor %}
+    </select><br>
+
+    <button type="submit">Submit</button>
+  </form>
+{% endblock %}

@@ -4,7 +4,7 @@
     <h1>Travel Packages</h1>
     <body>
         {% for travel_plans in travel_plans %}
-        <a href="{{ url_for('pack', plan=travel_plans.id) }}">{{ travel_plans.name }} by {{ travel_plans.owner }}</a><br>
+        <a href="{{ url_for('pack', plan=travel_plans.id) }}">{{ travel_plans.name }} by {{ travel_plans.owner.username }}</a><br>
         {% endfor %}
     </body>
 {% endblock %}

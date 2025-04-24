@@ -3,8 +3,10 @@ from urllib.parse import urlsplit
 from flask import render_template, flash, redirect, url_for, request, jsonify
 from flask_login import login_user, logout_user, current_user, login_required
 import sqlalchemy as sa
+from flask_migrate import current
+
 from app import app, db
-from app.forms import LoginForm, RegistrationForm, PlanCreateForm, EditProfileForm, \
+from app.forms import LoginForm, RegistrationForm, EditProfileForm, \
     EmptyForm, PostForm, ResetPasswordRequestForm, ResetPasswordForm
 from app.models import User, Travelplan, Destination, Activities, ActivityToPlan
 
@@ -88,7 +90,7 @@ def register_user():
     if form.validate_on_submit():
         new_user = User(
             username=form.username.data,
-            password="",
+            password_hash="",
             about_me=form.about_me.data
         )
         new_user.set_password(form.password.data)
@@ -140,6 +142,7 @@ def get_activities(destination_id):
     return jsonify([{"id": a.id, "name": a.name} for a in activities])
 
 @app.route('/create_pack', methods=['GET', 'POST'])
+@login_required
 def create_pack():
     destinations = Destination.query.all()
 
@@ -151,14 +154,12 @@ def create_pack():
         destination_id = request.form['destination']
         activity_ids = request.form.getlist('activities')
 
-        user = db.session.get(User, 1)
-
         new_plan = Travelplan(
             name=name,
             budget=budget,
             time_needed=time_needed,
             group_rec=group_rec,
-            owner=user,
+            owner=current_user,
             destination_id=destination_id
         )
         db.session.add(new_plan)
@@ -175,3 +176,59 @@ def create_pack():
         return redirect(url_for('index'))
 
     return render_template('create_package.html', destinations=destinations)
+
+@app.route('/user')
+@login_required
+def user_page():
+    travelplans = Travelplan.query.filter_by(owner=current_user).all()
+
+    plans_with_activities = []
+    for plan in travelplans:
+        activity_links = db.session.query(ActivityToPlan).filter_by(plan_id=plan.id).all()
+        activities = [link.active for link in activity_links]
+        plans_with_activities.append((plan, activities))
+
+    return render_template('user_page.html', user=current_user, plans_with_activities=plans_with_activities)
+
+
+@app.route('/create_active', methods=['GET', 'POST'])
+@login_required
+def create_active():
+    destinations = Destination.query.all()
+
+    if request.method == 'POST':
+        name = request.form['name']
+        establishment = request.form['establishment']
+        description = request.form['description']
+        destination_id = request.form['destination']
+
+        new_activity = Activities(
+            name=name,
+            establishment=establishment,
+            description=description,
+            destination_id=destination_id
+        )
+        db.session.add(new_activity)
+        db.session.commit()
+
+        db.session.commit()
+        flash('Plan added successfully.')
+        return redirect(url_for('index'))
+
+    return render_template('create_activity.html', destinations=destinations)
+
+
+@app.route('/activities_list')
+def activities_list():
+    activities = Activities.query.all()
+    return render_template('activities.html', title='Activities', activities=activities)
+
+
+@app.route("/activity/<int:active>")
+def activity(active):
+    activity = db.session.get(Activities, active)
+
+    if activity is None:
+        return "Activity not found", 404
+
+    return render_template('activity.html', title='Activity', activity=activity)
