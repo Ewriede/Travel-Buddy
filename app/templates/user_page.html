@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block content %}
+  <h1>{{ user.username }}'s Travel Dashboard</h1>
+  <p><strong>About me:</strong> {{ user.about_me }}</p>
+
+  <a href="{{ url_for('create_pack', username=user.username) }}" class="btn btn-primary">Create New Travel Plan</a>
+
+  <hr>
+  {% if plans_with_activities %}
+    <h2>Your Travel Plans</h2>
+    {% for plan, activities in plans_with_activities %}
+      <div class="card mb-3">
+        <div class="card-body">
+          <h4>{{ plan.name }} <small class="text-muted">({{ plan.destination_plan.name }})</small></h4>
+          <p><strong>Time Needed:</strong> {{ plan.time_needed }}</p>
+          <p><strong>Budget:</strong> ${{ plan.budget }}</p>
+          <p><strong>Group Recommendation:</strong> {{ plan.group_rec }} people</p>
+          <p><strong>Activities:</strong></p>
+          <ul>
+            {% for activity in activities %}
+              <li>{{ activity.name }} at {{ activity.establishment }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    {% endfor %}
+  {% else %}
+    <p>No travel plans yet. Create one!</p>
+  {% endif %}
+{% endblock %}

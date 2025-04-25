@@ -10,10 +10,44 @@
 
     </head>
     <body>
-        <nav>
-            <div>
-                <a class="navbar-brand" href="{{ url_for('index')}}">Home</a>
-            </div>
+        <nav class="navbar navbar-expand-lg navbar-light bg-light px-4">
+          <a class="navbar-brand" href="{{ url_for('index') }}">Travel Buddy</a>
+          <div class="collapse navbar-collapse justify-content-between">
+            <ul class="navbar-nav">
+              <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('index') }}">Home</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('travel_packages') }}">Travel Packages</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('activities_list') }}">Activities</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('create_pack') }}">Create Pack</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('create_active') }}">Create Activity</a>
+              </li>
+            </ul>
+            <ul class="navbar-nav">
+              {% if current_user.is_authenticated %}
+                <li class="nav-item">
+                  <a class="nav-link" href="{{ url_for('user_page', username=current_user.username) }}">Profile ({{ current_user.username }})</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
+                </li>
+              {% else %}
+                <li class="nav-item">
+                  <a class="nav-link" href="{{ url_for('register_user') }}">Register</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="{{ url_for('login') }}">Login</a>
+                </li>
+              {% endif %}
+            </ul>
+          </div>
         </nav>
         <hr>
         {% with messages = get_flashed_messages() %}

@@ -1,10 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends "base.html" %}
 
-</body>
-</html>
+{% block content %}
+    <h1>Travel Packages</h1>
+    <body>
+        {% for travel_plans in travel_plans %}
+        <a href="{{ url_for('pack', plan=travel_plans.id) }}">{{ travel_plans.name }} by {{ travel_plans.owner.username }}</a><br>
+        {% endfor %}
+    </body>
+{% endblock %}

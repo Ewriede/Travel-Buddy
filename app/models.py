@@ -20,16 +20,23 @@ followers = sa.Table(
 )
 
 
-class User(UserMixin, db.Model):
+class User(db.Model, UserMixin):
     id: so.Mapped[int] = so.mapped_column(primary_key=True)
     username: so.Mapped[str] = so.mapped_column(sa.String(64), index=True,
                                                 unique=True)
-    email: so.Mapped[str] = so.mapped_column(sa.String(120), index=True,
-                                             unique=True)
     password_hash: so.Mapped[Optional[str]] = so.mapped_column(sa.String(256))
     about_me: so.Mapped[Optional[str]] = so.mapped_column(sa.String(140))
+
+    tpacks: so.WriteOnlyMapped['ActivityToPlan'] = so.relationship('Travelplan', back_populates='owner')
+    """
+        email: so.Mapped[str] = so.mapped_column(sa.String(120), index=True,
+                                                 unique=True)
+    """
+
+    """
     last_seen: so.Mapped[Optional[datetime]] = so.mapped_column(
         default=lambda: datetime.now(timezone.utc))
+    """
 
     def __repr__(self):
         return '<User {}>'.format(self.username)
@@ -129,18 +136,54 @@ class Post(db.Model):
         return '<Post {}>'.format(self.body)
 """
 
-class TravelPlan(db.model):
+class Destination(db.Model):
     id: so.Mapped[int] = so.mapped_column(primary_key=True)
+    name: so.Mapped[str] = so.mapped_column(sa.String(140))
+
+    activity_des: so.WriteOnlyMapped['Activities'] = so.relationship('Activities', back_populates='destination_activity')
+
+    plan_des: so.WriteOnlyMapped['Travelplan'] = so.relationship('Travelplan', back_populates='destination_plan')
+
+
+class Travelplan(db.Model):
+    id: so.Mapped[int] = so.mapped_column(primary_key=True)
+    name: so.Mapped[str] = so.mapped_column(sa.String(140))
+    time_needed: so.Mapped[str] = so.mapped_column(sa.String(140))
+    budget: so.Mapped[int] = so.mapped_column()
+    group_rec: so.Mapped[int] = so.mapped_column()
+
+    user_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey('user.id'))
+    owner: so.Mapped['User'] = so.relationship('User', back_populates='tpacks')
+
+    destination_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey('destination.id'))
+    destination_plan: so.Mapped['Destination'] = so.relationship('Destination', back_populates='plan_des')
+
+    plan_link: so.WriteOnlyMapped['ActivityToPlan'] = so.relationship('ActivityToPlan', back_populates='plan')
+
 
 class Activities(db.Model):
     id: so.Mapped[int] = so.mapped_column(primary_key=True)
-    time_needed: so.Mapped[int] = so.mapped_column()
+    name: so.Mapped[str] = so.mapped_column(sa.String(140))
+    establishment: so.Mapped[str] = so.mapped_column(sa.String(140))
+    description: so.Mapped[str] = so.mapped_column(sa.String(140))
+
+    destination_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey('destination.id'))
+    destination_activity: so.Mapped['Destination'] = so.relationship('Destination', back_populates='activity_des')
+
+    activity_link: so.WriteOnlyMapped['ActivityToPlan'] = so.relationship('ActivityToPlan', back_populates="active")
 
 
+class ActivityToPlan(db.Model):
+    id: so.Mapped[int] = so.mapped_column(primary_key=True)
+
+    plan_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey('travelplan.id'))
+    plan: so.Mapped['Travelplan'] = so.relationship('Travelplan', back_populates="plan_link")
+
+    activity_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey('activities.id'))
+    active: so.Mapped['Activities'] = so.relationship('Activities', back_populates="activity_link")
+
+""" 
 class TravelPackage(db.Model):
     id: so.Mapped[int] = so.mapped_column(primary_key=True)
-    """
-        User
-        Travel Plan (Can have many packs (same plan in different package))
-        Maybe a calendar point (saving the package might be a problem with this though)
-    """
+    WILL Have the plan and just general special things like rating and maybe the saved bit
+"""

@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block content %}
+    {% if activity %}
+        <h1>{{ activity.name }}</h1>
+        <p>Establishment: {{ activity.establishment }}</p>
+        <p>Destination: {{ activity.destination_activity.name }}</p>
+        <p>Description: {{ activity.description }}</p>
+    {% else %}
+        <p>No activity found.</p>
+    {% endif %}
+{% endblock %}
