@@ -1,8 +1,28 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>Home Page</h1>
-    <body>
+    <header class="py-4" style="background-color: orange; color: white;">
+        <div class="container">
+            <h1 class="text-center">Home Page</h1>
+        </div>
+    </header>
+
+    <div class="container mt-4">
         <p>This website is _______________________________________</p>
-    </body>
+    </div>
+
+    <div class="container mt-5">
+        <h2 class="mb-3">Travel Destinations</h2>
+        <div class="row">
+            <div class="col-md-4">
+                <img src="https://source.unsplash.com/400x300/?beach" class="img-fluid rounded" alt="Beach">
+            </div>
+            <div class="col-md-4">
+                <img src="https://source.unsplash.com/400x300/?mountains" class="img-fluid rounded" alt="Mountains">
+            </div>
+            <div class="col-md-4">
+                <img src="https://source.unsplash.com/400x300/?city" class="img-fluid rounded" alt="City">
+            </div>
+        </div>
+    </div>
 {% endblock %}
