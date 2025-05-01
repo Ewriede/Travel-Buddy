@@ -32,19 +32,20 @@ document.getElementById("destination").addEventListener("change", function () {
         .then(response => response.json())
         .then(data => {
             activityOptions = data;
-            const select = document.querySelector("select[name='activities']");
-            select.innerHTML = '';
-            data.forEach(a => {
-                const opt = document.createElement('option');
-                opt.value = a.id;
-                opt.textContent = a.name;
-                select.appendChild(opt);
-            });
+            const container = document.getElementById("activity-fields");
+            container.innerHTML = ''; // Clear existing fields
+
+            // Add initial dropdown
+            addActivityDropdown();
         });
 });
 
-document.getElementById("add-activity").addEventListener("click", () => {
+function addActivityDropdown() {
     const container = document.getElementById("activity-fields");
+
+    const wrapper = document.createElement("div");
+    wrapper.className = "activity-wrapper";
+
     const select = document.createElement("select");
     select.name = "activities";
     activityOptions.forEach(a => {
@@ -53,7 +54,21 @@ document.getElementById("add-activity").addEventListener("click", () => {
         opt.textContent = a.name;
         select.appendChild(opt);
     });
-    container.appendChild(select);
+
+    const removeButton = document.createElement("button");
+    removeButton.type = "button";
+    removeButton.textContent = "Remove";
+    removeButton.addEventListener("click", () => {
+        wrapper.remove();
+    });
+
+    wrapper.appendChild(select);
+    wrapper.appendChild(removeButton);
+    container.appendChild(wrapper);
+}
+
+document.getElementById("add-activity").addEventListener("click", () => {
+    addActivityDropdown();
 });
 </script>
 {% endblock %}
