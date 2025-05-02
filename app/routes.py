@@ -232,3 +232,5 @@ def activity(active):
         return "Activity not found", 404
 
     return render_template('activity.html', title='Activity', activity=activity)
+
+
