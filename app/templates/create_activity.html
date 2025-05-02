@@ -1,18 +1,43 @@
 {% extends "base.html" %}
+
 {% block content %}
-  <h2>Create a New Travel Plan</h2>
-  <form method="POST">
-    <input name="name" placeholder="Activity Name" required><br>
-    <input name="establishment" placeholder="Establishment" required><br>
-    <input name="description" placeholder="Description" required><br>
+  <!-- Orange Header -->
+  <header class="py-4" style="background-color: orange; color: white;">
+    <div class="container text-center">
+      <h2>Create a New Travel Plan</h2>
+    </div>
+  </header>
 
-    <label>Destination:</label>
-    <select name="destination" id="destination">
-        {% for dest in destinations %}
-        <option value="{{ dest.id }}">{{ dest.name }}</option>
-        {% endfor %}
-    </select><br>
+  <!-- Form Content -->
+  <div class="container mt-5">
+    <div class="card shadow p-4">
+      <form method="POST">
+        <div class="mb-3">
+          <label for="name" class="form-label">Activity Name</label>
+          <input type="text" class="form-control" id="name" name="name" required>
+        </div>
 
-    <button type="submit">Submit</button>
-  </form>
+        <div class="mb-3">
+          <label for="establishment" class="form-label">Establishment</label>
+          <input type="text" class="form-control" id="establishment" name="establishment" required>
+        </div>
+
+        <div class="mb-3">
+          <label for="description" class="form-label">Description</label>
+          <input type="text" class="form-control" id="description" name="description" required>
+        </div>
+
+        <div class="mb-3">
+          <label for="destination" class="form-label">Destination</label>
+          <select class="form-select" id="destination" name="destination" required>
+            {% for dest in destinations %}
+              <option value="{{ dest.id }}">{{ dest.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <button type="submit" class="btn btn-warning w-100">Submit</button>
+      </form>
+    </div>
+  </div>
 {% endblock %}

@@ -1,12 +1,38 @@
 {% extends "base.html" %}
 
 {% block content %}
-    {% if activity %}
-        <h1>{{ activity.name }}</h1>
-        <p>Establishment: {{ activity.establishment }}</p>
-        <p>Destination: {{ activity.destination_activity.name }}</p>
-        <p>Description: {{ activity.description }}</p>
-    {% else %}
-        <p>No activity found.</p>
-    {% endif %}
+    <header class="py-4" style="background-color: orange; color: white;">
+        <div class="container text-center">
+            <h1>{{ activity.name if activity else "Activity Details" }}</h1>
+        </div>
+    </header>
+
+    <div class="container mt-4">
+        {% if activity %}
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Establishment</h5>
+                    <p class="card-text">{{ activity.establishment }}</p>
+                </div>
+            </div>
+
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Destination</h5>
+                    <p class="card-text">{{ activity.destination_activity.name }}</p>
+                </div>
+            </div>
+
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Description</h5>
+                    <p class="card-text">{{ activity.description }}</p>
+                </div>
+            </div>
+        {% else %}
+            <div class="alert alert-warning" role="alert">
+                No activity found.
+            </div>
+        {% endif %}
+    </div>
 {% endblock %}

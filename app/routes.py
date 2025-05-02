@@ -41,8 +41,8 @@ def populate_db():
     user_2.set_password("Joe123")
     user_3 = User(username="Ethan", password_hash="", about_me="cool_person_#5")
     user_3.set_password("Ethan123")
-    user_4 = User(username="Marley", password_hash="", about_me="cool_person_#7")
-    user_4.set_password("Marley123")
+    user_4 = User(username="Marly", password_hash="", about_me="cool_person_#7")
+    user_4.set_password("Marly123")
     db.session.add_all([user_1, user_2, user_3, user_4])
     db.session.commit()
 

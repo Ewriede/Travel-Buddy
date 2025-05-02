@@ -1,70 +1,77 @@
 <!doctype html>
 <html>
-    <head>
-        <title>Travel Buddy</title>
-        <link
+<head>
+    <title>Travel Buddy</title>
+    <link
         href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
         rel="stylesheet"
         integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
         crossorigin="anonymous">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light px-4">
+        <a class="navbar-brand" href="{{ url_for('index') }}">Travel Buddy</a>
+        <div class="collapse navbar-collapse justify-content-between">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('index') }}">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('travel_packages') }}">Travel Packages</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('activities_list') }}">Activities</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('create_pack') }}">Create Pack</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('create_active') }}">Create Activity</a>
+                </li>
+            </ul>
+            <ul class="navbar-nav">
+                {% if current_user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('user_page', username=current_user.username) }}">Profile ({{ current_user.username }})</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
+                    </li>
+                {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('register_user') }}">Register</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('login') }}">Login</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+    </nav>
 
-    </head>
-    <body>
-        <nav class="navbar navbar-expand-lg navbar-light bg-light px-4">
-          <a class="navbar-brand" href="{{ url_for('index') }}">Travel Buddy</a>
-          <div class="collapse navbar-collapse justify-content-between">
-            <ul class="navbar-nav">
-              <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('index') }}">Home</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('travel_packages') }}">Travel Packages</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('activities_list') }}">Activities</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('create_pack') }}">Create Pack</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('create_active') }}">Create Activity</a>
-              </li>
-            </ul>
-            <ul class="navbar-nav">
-              {% if current_user.is_authenticated %}
-                <li class="nav-item">
-                  <a class="nav-link" href="{{ url_for('user_page', username=current_user.username) }}">Profile ({{ current_user.username }})</a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
-                </li>
-              {% else %}
-                <li class="nav-item">
-                  <a class="nav-link" href="{{ url_for('register_user') }}">Register</a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link" href="{{ url_for('login') }}">Login</a>
-                </li>
-              {% endif %}
-            </ul>
-          </div>
-        </nav>
-        <hr>
+    <!-- ✅ Orange header line -->
+    <div style="height: 10px; background-color: orange;"></div>
+
+    <div class="container mt-4">
         {% with messages = get_flashed_messages() %}
         {% if messages %}
-        <ul>
-            {% for message in messages %}
-            <li>{{ message }}</li>
-            {% endfor %}
-        </ul>
+        <div class="alert alert-info">
+            <ul class="mb-0">
+                {% for message in messages %}
+                    <li>{{ message }}</li>
+                {% endfor %}
+            </ul>
+        </div>
         {% endif %}
         {% endwith %}
+
         {% block content %}{% endblock %}
+    </div>
+
     <script
         src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
         crossorigin="anonymous">
     </script>
-    </body>
+</body>
 </html>
-

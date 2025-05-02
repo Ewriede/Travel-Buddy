@@ -1,59 +1,95 @@
 {% extends "base.html" %}
+
 {% block content %}
-  <h2>Create a New Travel Plan</h2>
-  <form method="POST">
-    <input name="name" placeholder="Plan Name" required><br>
-    <input name="budget" placeholder="Budget" required><br>
-    <input name="time_needed" placeholder="Time Needed" required><br>
-    <input name="group_rec" placeholder="Group Size" required><br>
-
-    <label>Destination:</label>
-    <select name="destination" id="destination">
-        {% for dest in destinations %}
-        <option value="{{ dest.id }}">{{ dest.name }}</option>
-        {% endfor %}
-    </select><br>
-
-    <div id="activity-fields">
-        <select name="activities">
-        </select>
+  <!-- Orange Header -->
+  <header class="py-4" style="background-color: orange; color: white;">
+    <div class="container text-center">
+      <h2>Create a New Travel Plan</h2>
     </div>
+  </header>
 
-    <button type="button" id="add-activity">Add Another Activity</button><br><br>
-    <button type="submit">Submit</button>
-</form>
+  <!-- Form Content -->
+  <div class="container mt-5">
+    <div class="card shadow p-4">
+      <form method="POST">
+        <div class="mb-3">
+          <label for="name" class="form-label">Plan Name</label>
+          <input name="name" class="form-control" id="name" placeholder="Plan Name" required>
+        </div>
 
-<script>
-let activityOptions = [];
+        <div class="mb-3">
+          <label for="budget" class="form-label">Budget</label>
+          <input name="budget" class="form-control" id="budget" placeholder="Budget" required>
+        </div>
 
-document.getElementById("destination").addEventListener("change", function () {
-    const id = this.value;
-    fetch(`/get_activities/${id}`)
+        <div class="mb-3">
+          <label for="time_needed" class="form-label">Time Needed</label>
+          <input name="time_needed" class="form-control" id="time_needed" placeholder="Time Needed" required>
+        </div>
+
+        <div class="mb-3">
+          <label for="group_rec" class="form-label">Group Size</label>
+          <input name="group_rec" class="form-control" id="group_rec" placeholder="Group Size" required>
+        </div>
+
+        <div class="mb-3">
+          <label for="destination" class="form-label">Destination</label>
+          <select class="form-select" name="destination" id="destination" required>
+            {% for dest in destinations %}
+              <option value="{{ dest.id }}">{{ dest.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div id="activity-fields" class="mb-3">
+          <label class="form-label">Activities</label>
+          <select name="activities" class="form-select mb-2">
+            <!-- Options will be added by JS -->
+          </select>
+        </div>
+
+        <button type="button" class="btn btn-secondary mb-3" id="add-activity">Add Another Activity</button>
+        <button type="submit" class="btn btn-warning w-100">Submit</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    let activityOptions = [];
+
+    document.getElementById("destination").addEventListener("change", function () {
+      const id = this.value;
+      fetch(`/get_activities/${id}`)
         .then(response => response.json())
         .then(data => {
-            activityOptions = data;
-            const select = document.querySelector("select[name='activities']");
+          activityOptions = data;
+          const selects = document.querySelectorAll("select[name='activities']");
+          selects.forEach(select => {
             select.innerHTML = '';
             data.forEach(a => {
-                const opt = document.createElement('option');
-                opt.value = a.id;
-                opt.textContent = a.name;
-                select.appendChild(opt);
+              const opt = document.createElement('option');
+              opt.value = a.id;
+              opt.textContent = a.name;
+              select.appendChild(opt);
             });
+          });
         });
-});
+    });
 
-document.getElementById("add-activity").addEventListener("click", () => {
-    const container = document.getElementById("activity-fields");
-    const select = document.createElement("select");
-    select.name = "activities";
-    activityOptions.forEach(a => {
+    document.getElementById("add-activity").addEventListener("click", () => {
+      const container = document.getElementById("activity-fields");
+      const newSelect = document.createElement("select");
+      newSelect.name = "activities";
+      newSelect.classList.add("form-select", "mb-2");
+
+      activityOptions.forEach(a => {
         const opt = document.createElement('option');
         opt.value = a.id;
         opt.textContent = a.name;
-        select.appendChild(opt);
+        newSelect.appendChild(opt);
+      });
+
+      container.appendChild(newSelect);
     });
-    container.appendChild(select);
-});
-</script>
+  </script>
 {% endblock %}

@@ -1,20 +1,39 @@
 {% extends "base.html" %}
 
 {% block content %}
-    {% if travel_pack %}
+  {% if travel_pack %}
+    <!-- Orange Header -->
+    <header class="py-4" style="background-color: orange; color: white;">
+      <div class="container text-center">
         <h1>{{ travel_pack[0].plan.name }} by {{ travel_pack[0].plan.owner.username }}</h1>
-        <p>Time Needed: {{ travel_pack[0].plan.time_needed }}</p>
-        <p>Budget: {{ travel_pack[0].plan.budget }}</p>
-        <p>Group Recommendation: {{ travel_pack[0].plan.group_rec }}</p>
-        <p>Destination Plan: {{ travel_pack[0].plan.destination_plan.name }}</p>
+      </div>
+    </header>
 
-        <h2>Activities:</h2>
-        <ul>
-        {% for activity in travel_pack %}
-            <li>{{ activity.active.name }} at {{ activity.active.establishment }}</li>
-        {% endfor %}
+    <div class="container mt-5">
+      <div class="card shadow p-4">
+        <h4 class="mb-3 text-primary">Plan Details</h4>
+        <p><strong>Time Needed:</strong> {{ travel_pack[0].plan.time_needed }}</p>
+        <p><strong>Budget:</strong> {{ travel_pack[0].plan.budget }}</p>
+        <p><strong>Group Recommendation:</strong> {{ travel_pack[0].plan.group_rec }}</p>
+        <p><strong>Destination Plan:</strong> {{ travel_pack[0].plan.destination_plan.name }}</p>
+
+        <hr>
+
+        <h5 class="mt-4">Activities</h5>
+        <ul class="list-group">
+          {% for activity in travel_pack %}
+            <li class="list-group-item">
+              {{ activity.active.name }} at {{ activity.active.establishment }}
+            </li>
+          {% endfor %}
         </ul>
-    {% else %}
-        <p>No travel plan found.</p>
-    {% endif %}
+      </div>
+    </div>
+  {% else %}
+    <div class="container mt-5">
+      <div class="alert alert-warning text-center">
+        No travel plan found.
+      </div>
+    </div>
+  {% endif %}
 {% endblock %}

@@ -1,9 +1,21 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>Activities</h1>
+    <header class="py-4" style="background-color: orange; color: white;">
+        <div class="container text-center">
+            <h1>Activities</h1>
+        </div>
+    </header>
 
-    {% for activity in activities %}
-        <a href="{{ url_for('activity', active=activity.id) }}">{{ activity.name }} at {{ activity.establishment }}</a><br>
-    {% endfor %}
+    <div class="container mt-4">
+        <ul class="list-group">
+            {% for activity in activities %}
+                <li class="list-group-item">
+                    <a href="{{ url_for('activity', active=activity.id) }}">
+                        {{ activity.name }} at {{ activity.establishment }}
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
 {% endblock %}
