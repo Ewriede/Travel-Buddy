@@ -1,30 +1,10 @@
 {% extends "base.html" %}
 
 {% block content %}
-  <!-- Orange Header -->
-  <header class="py-4" style="background-color: orange; color: white;">
-    <div class="container text-center">
-      <h1>Travel Packages</h1>
-    </div>
-  </header>
-
-  <!-- Travel Plans Listing -->
-  <div class="container mt-5">
-    <div class="row justify-content-center">
-      {% for travel_plans in travel_plans %}
-        <div class="col-md-6 mb-3">
-          <div class="card shadow-sm">
-            <div class="card-body">
-              <h5 class="card-title">
-                <a href="{{ url_for('pack', plan=travel_plans.id) }}" class="text-decoration-none">
-                  {{ travel_plans.name }}
-                </a>
-              </h5>
-              <p class="card-text">By {{ travel_plans.owner.username }}</p>
-            </div>
-          </div>
-        </div>
-      {% endfor %}
-    </div>
-  </div>
+    <h1>Travel Packages</h1>
+    <body>
+        {% for travel_plans in travel_plans %}
+        <a href="{{ url_for('pack', plan=travel_plans.id) }}">{{ travel_plans.name }} by {{ travel_plans.owner.username }}</a><br>
+        {% endfor %}
+    </body>
 {% endblock %}

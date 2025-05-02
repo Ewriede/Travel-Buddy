@@ -54,42 +54,52 @@
     </div>
   </div>
 
-  <script>
-    let activityOptions = [];
+<script>
+let activityOptions = [];
 
-    document.getElementById("destination").addEventListener("change", function () {
-      const id = this.value;
-      fetch(`/get_activities/${id}`)
+document.getElementById("destination").addEventListener("change", function () {
+    const id = this.value;
+    fetch(`/get_activities/${id}`)
         .then(response => response.json())
         .then(data => {
-          activityOptions = data;
-          const selects = document.querySelectorAll("select[name='activities']");
-          selects.forEach(select => {
-            select.innerHTML = '';
-            data.forEach(a => {
-              const opt = document.createElement('option');
-              opt.value = a.id;
-              opt.textContent = a.name;
-              select.appendChild(opt);
-            });
-          });
+            activityOptions = data;
+            const container = document.getElementById("activity-fields");
+            container.innerHTML = ''; // Clear existing fields
+
+            // Add initial dropdown
+            addActivityDropdown();
         });
-    });
+});
 
-    document.getElementById("add-activity").addEventListener("click", () => {
-      const container = document.getElementById("activity-fields");
-      const newSelect = document.createElement("select");
-      newSelect.name = "activities";
-      newSelect.classList.add("form-select", "mb-2");
+function addActivityDropdown() {
+    const container = document.getElementById("activity-fields");
 
-      activityOptions.forEach(a => {
+    const wrapper = document.createElement("div");
+    wrapper.className = "activity-wrapper";
+
+    const select = document.createElement("select");
+    select.name = "activities";
+    activityOptions.forEach(a => {
         const opt = document.createElement('option');
         opt.value = a.id;
         opt.textContent = a.name;
-        newSelect.appendChild(opt);
-      });
-
-      container.appendChild(newSelect);
+        select.appendChild(opt);
     });
-  </script>
+
+    const removeButton = document.createElement("button");
+    removeButton.type = "button";
+    removeButton.textContent = "Remove";
+    removeButton.addEventListener("click", () => {
+        wrapper.remove();
+    });
+
+    wrapper.appendChild(select);
+    wrapper.appendChild(removeButton);
+    container.appendChild(wrapper);
+}
+
+document.getElementById("add-activity").addEventListener("click", () => {
+    addActivityDropdown();
+});
+</script>
 {% endblock %}
