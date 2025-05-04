@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-5">
+  <h2>Edit Profile</h2>
+  <form method="POST">
+    <div class="mb-3">
+      <label for="username" class="form-label">Username</label>
+      <input type="text" class="form-control" id="username" name="username" value="{{ user.username }}">
+    </div>
+    <div class="mb-3">
+      <label for="about_me" class="form-label">About Me</label>
+      <textarea class="form-control" id="about_me" name="about_me" rows="3">{{ user.about_me }}</textarea>
+    </div>
+    <button type="submit" class="btn btn-success">Save Changes</button>
+    <a href="{{ url_for('user_page', username=user.username) }}" class="btn btn-secondary">Cancel</a>
+  </form>
+</div>
+{% endblock %}

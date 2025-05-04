@@ -13,7 +13,7 @@
       <div class="card shadow p-4">
         <h4 class="mb-3 text-primary">Plan Details</h4>
         <p><strong>Time Needed:</strong> {{ travel_pack[0].plan.time_needed }}</p>
-        <p><strong>Budget:</strong> {{ travel_pack[0].plan.budget }}</p>
+        <p><strong>Budget:</strong> ${{ travel_pack[0].plan.budget }}</p>
         <p><strong>Group Recommendation:</strong> {{ travel_pack[0].plan.group_rec }}</p>
         <p><strong>Destination Plan:</strong> {{ travel_pack[0].plan.destination_plan.name }}</p>
 
@@ -27,6 +27,19 @@
             </li>
           {% endfor %}
         </ul>
+
+        <!-- Save/Unsave Button Logic -->
+        {% if travel_pack[0].plan.owner != user %}
+          {% if travel_pack[0].plan not in user.saved_travelplans %}
+            <form method="POST" action="{{ url_for('save_package', plan_id=travel_pack[0].plan.id) }}">
+              <button class="btn btn-sm btn-outline-primary" type="submit">Save Package</button>
+            </form>
+          {% else %}
+            <form method="POST" action="{{ url_for('unsave_package', plan_id=travel_pack[0].plan.id) }}">
+              <button class="btn btn-sm btn-outline-danger" type="submit">Unsave Package</button>
+            </form>
+          {% endif %}
+        {% endif %}
       </div>
     </div>
   {% else %}

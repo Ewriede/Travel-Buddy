@@ -15,11 +15,12 @@
         <p><strong>About me:</strong> {{ user.about_me }}</p>
         <a href="{{ url_for('create_pack', username=user.username) }}" class="btn btn-primary">Create New Travel Plan</a>
       </div>
+      <a href="{{ url_for('edit_profile') }}" class="btn btn-warning btn-sm">Edit Profile</a>
     </div>
 
     <hr>
 
-    <!-- Travel Plans -->
+    <!-- Travel Plans Section -->
     {% if plans_with_activities %}
       <h2>Your Travel Plans</h2>
       <div class="row">
@@ -39,6 +40,18 @@
                     <li>{{ activity.name }} at {{ activity.establishment }}</li>
                   {% endfor %}
                 </ul>
+                <!-- Save/Unsave Button -->
+                {% if plan.owner != user %}
+                  {% if plan not in user.saved_travelplans %}
+                    <form method="POST" action="{{ url_for('save_package', plan_id=plan.id) }}">
+                      <button class="btn btn-sm btn-outline-primary" type="submit">Save Package</button>
+                    </form>
+                  {% else %}
+                    <form method="POST" action="{{ url_for('unsave_package', plan_id=plan.id) }}">
+                      <button class="btn btn-sm btn-outline-danger" type="submit">Unsave Package</button>
+                    </form>
+                  {% endif %}
+                {% endif %}
               </div>
             </div>
           </div>
@@ -46,6 +59,33 @@
       </div>
     {% else %}
       <p>No travel plans yet. Create one!</p>
+    {% endif %}
+
+    <hr>
+
+    <!-- Saved Packages Section -->
+    <h2>Saved Packages</h2>
+    {% if user.saved_travelplans %}
+      <div class="row">
+        {% for saved_package in user.saved_travelplans %}
+          <div class="col-md-6 mb-3">
+            <div class="card shadow-sm">
+              <div class="card-body">
+                <h5 class="card-title">
+                  <a href="{{ url_for('pack', plan=saved_package.id) }}">{{ saved_package.name }}</a>
+                </h5>
+                <p>By {{ saved_package.owner.username }}</p>
+                <p><strong>Time Needed:</strong> {{ saved_package.time_needed }}</p>
+                <form method="POST" action="{{ url_for('unsave_package', plan_id=saved_package.id) }}">
+                  <button class="btn btn-sm btn-outline-danger" type="submit">Unsave</button>
+                </form>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p>You haven’t saved any packages yet.</p>
     {% endif %}
   </div>
 {% endblock %}

@@ -18,8 +18,30 @@ def index():
 
 @app.route('/travel_packages')
 def travel_packages():
-    travel_plans = Travelplan.query.all()
-    return render_template('travel_packages.html', title='Travel Packages', travel_plans=travel_plans)
+    query = Travelplan.query
+
+    destination_id = request.args.get('destination')
+    budget = request.args.get('budget')
+    group_size = request.args.get('group_size')
+    time_needed = request.args.get('time_needed')
+
+    if destination_id:
+        query = query.filter(Travelplan.destination_id == int(destination_id))
+    if budget:
+        query = query.filter(Travelplan.budget <= int(budget))
+    if group_size:
+        query = query.filter(Travelplan.group_rec >= int(group_size))
+    if time_needed:
+        try:
+            time_needed_days = int(time_needed)
+            query = query.filter(Travelplan.time_needed <= time_needed_days)
+        except ValueError:
+            pass
+
+    travel_plans = query.all()
+    destinations = Destination.query.all()
+
+    return render_template('travel_packages.html', title='Travel Packages', travel_plans=travel_plans, destinations=destinations)
 
 @app.route('/pack/<plan>')
 def pack(plan):
@@ -28,9 +50,15 @@ def pack(plan):
     except ValueError:
         return "Invalid unit ID format", 400
 
+    # Get the travel plan and activities
     travel_pack = ActivityToPlan.query.filter_by(plan_id=plan_id).all()
 
-    return render_template('pack.html', title='Travel_Pack', travel_pack=travel_pack)
+    # Fetch the actual travel plan for the owner check
+    plan = Travelplan.query.get(plan_id)
+
+    # Pass the travel pack and the current user to the template
+    return render_template('pack.html', title='Travel Package', travel_pack=travel_pack, plan=plan, user=current_user)
+
 
 @app.route("/populate_db")
 def populate_db():
@@ -52,10 +80,10 @@ def populate_db():
     db.session.add_all([destination_1, destination_2, destination_3])
     db.session.commit()
 
-    plan_1 = Travelplan(name="Swim School", time_needed="2 Weeks", budget="1000", group_rec="4", owner=user_1, destination_plan=destination_1)
-    plan_2 = Travelplan(name="Shopping Spree", time_needed="3 Days", budget="250", group_rec="3", owner=user_2, destination_plan=destination_2)
-    plan_3 = Travelplan(name="From a Walk to a Ride", time_needed="1 Month", budget="5000", group_rec="6", owner=user_3, destination_plan=destination_3)
-    plan_4 = Travelplan(name="Skipping School", time_needed="2 Days", budget="150", group_rec="2", owner=user_2, destination_plan=destination_1)
+    plan_1 = Travelplan(name="Swim School", time_needed="14", budget="1000", group_rec="4", owner=user_1, destination_plan=destination_1)
+    plan_2 = Travelplan(name="Shopping Spree", time_needed="3", budget="250", group_rec="3", owner=user_2, destination_plan=destination_2)
+    plan_3 = Travelplan(name="From a Walk to a Ride", time_needed="31", budget="5000", group_rec="6", owner=user_3, destination_plan=destination_3)
+    plan_4 = Travelplan(name="Skipping School", time_needed="2", budget="150", group_rec="2", owner=user_2, destination_plan=destination_1)
     db.session.add_all([plan_1, plan_2, plan_3, plan_4])
     db.session.commit()
 
@@ -234,3 +262,39 @@ def activity(active):
     return render_template('activity.html', title='Activity', activity=activity)
 
 
+@app.route('/edit_profile', methods=['GET', 'POST'])
+@login_required
+def edit_profile():
+    if request.method == 'POST':
+        current_user.username = request.form['username']
+        current_user.about_me = request.form['about_me']
+        db.session.commit()
+        flash('Your profile has been updated.')
+        return redirect(url_for('user_page', username=current_user.username))
+
+    return render_template('edit_profile.html', user=current_user)
+
+@app.route('/save_package/<int:plan_id>', methods=['POST'])
+@login_required
+def save_package(plan_id):
+    plan = Travelplan.query.get_or_404(plan_id)
+    if plan in current_user.saved_travelplans:
+        flash('Package already saved.')
+    else:
+        current_user.saved_travelplans.append(plan)
+        db.session.commit()
+        flash('Package saved to your profile.')
+    return redirect(request.referrer or url_for('user_page'))
+
+
+@app.route('/unsave_package/<int:plan_id>', methods=['POST'])
+@login_required
+def unsave_package(plan_id):
+    plan = Travelplan.query.get_or_404(plan_id)
+    if plan in current_user.saved_travelplans:
+        current_user.saved_travelplans.remove(plan)
+        db.session.commit()
+        flash('Package removed from saved list.')
+    else:
+        flash('Package not in your saved list.')
+    return redirect(request.referrer or url_for('user_page'))

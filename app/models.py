@@ -6,39 +6,37 @@ import sqlalchemy as sa
 import sqlalchemy.orm as so
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
-import jwt
 from app import app, db, login
 
-
-followers = sa.Table(
-    'followers',
-    db.metadata,
-    sa.Column('follower_id', sa.Integer, sa.ForeignKey('user.id'),
-              primary_key=True),
-    sa.Column('followed_id', sa.Integer, sa.ForeignKey('user.id'),
-              primary_key=True)
+saved_packages = db.Table(
+    'saved_packages',
+    db.Column('user_id', db.Integer, db.ForeignKey('user.id'), primary_key=True),
+    db.Column('travelplan_id', db.Integer, db.ForeignKey('travelplan.id'), primary_key=True)
 )
-
 
 class User(db.Model, UserMixin):
     id: so.Mapped[int] = so.mapped_column(primary_key=True)
-    username: so.Mapped[str] = so.mapped_column(sa.String(64), index=True,
-                                                unique=True)
+    username: so.Mapped[str] = so.mapped_column(sa.String(64), index=True, unique=True)
     password_hash: so.Mapped[Optional[str]] = so.mapped_column(sa.String(256))
     about_me: so.Mapped[Optional[str]] = so.mapped_column(sa.String(140))
 
     tpacks: so.WriteOnlyMapped['ActivityToPlan'] = so.relationship('Travelplan', back_populates='owner')
 
+    saved_travelplans = db.relationship(
+        'Travelplan',
+        secondary=saved_packages,
+        backref=db.backref('saved_by_users', lazy='dynamic'),
+        lazy='dynamic'
+    )
 
     def __repr__(self):
-        return '<User {}>'.format(self.username)
+        return f'<User {self.username}>'
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
-
 
 @login.user_loader
 def load_user(id):
@@ -50,14 +48,13 @@ class Destination(db.Model):
     name: so.Mapped[str] = so.mapped_column(sa.String(140))
 
     activity_des: so.WriteOnlyMapped['Activities'] = so.relationship('Activities', back_populates='destination_activity')
-
     plan_des: so.WriteOnlyMapped['Travelplan'] = so.relationship('Travelplan', back_populates='destination_plan')
 
 
 class Travelplan(db.Model):
     id: so.Mapped[int] = so.mapped_column(primary_key=True)
     name: so.Mapped[str] = so.mapped_column(sa.String(140))
-    time_needed: so.Mapped[str] = so.mapped_column(sa.String(140))
+    time_needed: so.Mapped[int] = so.mapped_column()
     budget: so.Mapped[int] = so.mapped_column()
     group_rec: so.Mapped[int] = so.mapped_column()
 
@@ -90,9 +87,3 @@ class ActivityToPlan(db.Model):
 
     activity_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey('activities.id'))
     active: so.Mapped['Activities'] = so.relationship('Activities', back_populates="activity_link")
-
-""" 
-class TravelPackage(db.Model):
-    id: so.Mapped[int] = so.mapped_column(primary_key=True)
-    WILL Have the plan and just general special things like rating and maybe the saved bit
-"""
