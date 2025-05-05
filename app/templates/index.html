@@ -3,26 +3,54 @@
 {% block content %}
     <header class="py-4" style="background-color: orange; color: white;">
         <div class="container">
-            <h1 class="text-center">Home Page</h1>
+            <h1 class="text-center">Travel Buddy</h1>
         </div>
     </header>
 
     <div class="container mt-4">
-        <p>Welcome to TravelBuddy</p>
+        <p>Welcome to TravelBuddy, Our company is here to make your travel dreams come true. You just need to a destination and we will be at your service</p>
+    </div>
+    <div class="container mt-5">
+  <h2 class="mb-4 text-center">Travel Destinations</h2>
+  <div class="row g-4">
+    <!-- Japan -->
+    <div class="col-md-4">
+      <div class="card h-100 shadow">
+        <img src="https://www.state.gov/wp-content/uploads/2019/04/Japan-2107x1406.jpg"
+             class="card-img-top"
+             alt="Japan"
+             style="height: 250px; object-fit: cover;">
+        <div class="card-body text-center">
+          <h5 class="card-title">Japan</h5>
+        </div>
+      </div>
     </div>
 
-    <div class="container mt-5">
-        <h2 class="mb-3">Travel Destinations</h2>
-        <div class="row">
-            <div class="col-md-4">
-                <img src="https://source.unsplash.com/400x300/?beach" class="img-fluid rounded" alt="Beach">
-            </div>
-            <div class="col-md-4">
-                <img src="https://source.unsplash.com/400x300/?mountains" class="img-fluid rounded" alt="Mountains">
-            </div>
-            <div class="col-md-4">
-                <img src="https://source.unsplash.com/400x300/?city" class="img-fluid rounded" alt="City">
-            </div>
+    <!-- United States -->
+    <div class="col-md-4">
+      <div class="card h-100 shadow">
+        <img src="https://i.natgeofe.com/k/57873055-5e16-4eac-add4-c08c8b5f3bd7/united-states-statue-of-liberty_square.jpg"
+             class="card-img-top"
+             alt="United States"
+             style="height: 250px; object-fit: cover;">
+        <div class="card-body text-center">
+          <h5 class="card-title">United States</h5>
         </div>
+      </div>
     </div>
+
+    <!-- Canada -->
+    <div class="col-md-4">
+      <div class="card h-100 shadow">
+        <img src="https://www.worldtravelguide.net/wp-content/uploads/2017/03/shu-Canada-Toronto_1388944829-1440x823.jpg"
+             class="card-img-top"
+             alt="Canada"
+             style="height: 250px; object-fit: cover;">
+        <div class="card-body text-center">
+          <h5 class="card-title">Canada</h5>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock %}
