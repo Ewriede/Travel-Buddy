@@ -11,6 +11,20 @@
 
     <div class="container mt-5">
       <div class="card shadow p-4">
+        <!-- Display the Travel Plan Image -->
+        {% if travel_pack[0].plan.image_filename %}
+            <img src="{{ url_for('static', filename='uploads/travel_plans/' ~ travel_pack[0].plan.image_filename) }}"
+                 class="img-fluid mb-4"
+                 style="max-height: 400px; object-fit: cover;"
+                 alt="Plan Image">
+        {% else %}
+            <img src="{{ url_for('static', filename='imgs/no_img.png') }}"
+                 class="img-fluid mb-4"
+                 style="max-height: 400px; object-fit: cover;"
+                 alt="No Image">
+        {% endif %}
+
+
         <h4 class="mb-3 text-primary">Plan Details</h4>
         <p><strong>Time Needed:</strong> {{ travel_pack[0].plan.time_needed }}</p>
         <p><strong>Budget:</strong> ${{ travel_pack[0].plan.budget }}</p>
@@ -23,6 +37,13 @@
         <ul class="list-group">
           {% for activity in travel_pack %}
             <li class="list-group-item">
+              <!-- Display the Activity Image -->
+              {% if activity.active.image_filename %}
+                <img src="{{ url_for('static', filename='uploads/activities/' ~ activity.active.image_filename) }}"
+                     class="img-thumbnail" style="max-height: 100px; object-fit: cover;" alt="Activity Image">
+              {% else %}
+                <img src="{{ url_for('static', filename='imgs/no_img.png') }}" alt="No Image" class="img-thumbnail" style="max-height: 100px;">
+              {% endif %}
               {{ activity.active.name }} at {{ activity.active.establishment }}
             </li>
           {% endfor %}
@@ -32,11 +53,11 @@
         {% if travel_pack[0].plan.owner != user %}
           {% if travel_pack[0].plan not in user.saved_travelplans %}
             <form method="POST" action="{{ url_for('save_package', plan_id=travel_pack[0].plan.id) }}">
-              <button class="btn btn-sm btn-outline-primary" type="submit">Save Package</button>
+              <button class="btn btn-sm btn-outline-primary mt-3" type="submit">Save Package</button>
             </form>
           {% else %}
             <form method="POST" action="{{ url_for('unsave_package', plan_id=travel_pack[0].plan.id) }}">
-              <button class="btn btn-sm btn-outline-danger" type="submit">Unsave Package</button>
+              <button class="btn btn-sm btn-outline-danger mt-3" type="submit">Unsave Package</button>
             </form>
           {% endif %}
         {% endif %}

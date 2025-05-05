@@ -11,7 +11,7 @@
   <!-- Form Content -->
   <div class="container mt-5">
     <div class="card shadow p-4">
-      <form method="POST">
+      <form method="POST" enctype="multipart/form-data">
         <div class="mb-3">
           <label for="name" class="form-label">Plan Name</label>
           <input name="name" class="form-control" id="name" placeholder="Plan Name" required>
@@ -41,6 +41,12 @@
           </select>
         </div>
 
+        <!-- Image Upload with Preview -->
+        <div class="mb-3">
+          <label for="image" class="form-label">Plan Image</label>
+          <input type="file" class="form-control" name="image" id="image" accept="image/*">
+        </div>
+
         <div id="activity-fields" class="mb-3">
           <label class="form-label">Activities</label>
           <select name="activities" class="form-select mb-2">
@@ -54,52 +60,63 @@
     </div>
   </div>
 
-<script>
-let activityOptions = [];
+  <script>
+    let activityOptions = [];
 
-document.getElementById("destination").addEventListener("change", function () {
-    const id = this.value;
-    fetch(`/get_activities/${id}`)
+    document.getElementById("destination").addEventListener("change", function () {
+      const id = this.value;
+      fetch(`/get_activities/${id}`)
         .then(response => response.json())
         .then(data => {
-            activityOptions = data;
-            const container = document.getElementById("activity-fields");
-            container.innerHTML = ''; // Clear existing fields
-
-            // Add initial dropdown
-            addActivityDropdown();
+          activityOptions = data;
+          const container = document.getElementById("activity-fields");
+          container.innerHTML = ''; // Clear existing fields
+          addActivityDropdown(); // Add first one
         });
-});
+    });
 
-function addActivityDropdown() {
-    const container = document.getElementById("activity-fields");
+    function addActivityDropdown() {
+      const container = document.getElementById("activity-fields");
 
-    const wrapper = document.createElement("div");
-    wrapper.className = "activity-wrapper";
+      const wrapper = document.createElement("div");
+      wrapper.className = "activity-wrapper mb-2";
 
-    const select = document.createElement("select");
-    select.name = "activities";
-    activityOptions.forEach(a => {
+      const select = document.createElement("select");
+      select.name = "activities";
+      select.className = "form-select d-inline-block w-75 me-2";
+
+      activityOptions.forEach(a => {
         const opt = document.createElement('option');
         opt.value = a.id;
         opt.textContent = a.name;
         select.appendChild(opt);
-    });
+      });
 
-    const removeButton = document.createElement("button");
-    removeButton.type = "button";
-    removeButton.textContent = "Remove";
-    removeButton.addEventListener("click", () => {
+      const removeButton = document.createElement("button");
+      removeButton.type = "button";
+      removeButton.className = "btn btn-danger btn-sm";
+      removeButton.textContent = "Remove";
+      removeButton.addEventListener("click", () => {
         wrapper.remove();
+      });
+
+      wrapper.appendChild(select);
+      wrapper.appendChild(removeButton);
+      container.appendChild(wrapper);
+    }
+
+    document.getElementById("add-activity").addEventListener("click", () => {
+      addActivityDropdown();
     });
 
-    wrapper.appendChild(select);
-    wrapper.appendChild(removeButton);
-    container.appendChild(wrapper);
-}
-
-document.getElementById("add-activity").addEventListener("click", () => {
-    addActivityDropdown();
-});
-</script>
+    // Show selected image file name
+    document.getElementById('image').addEventListener('change', function () {
+      const preview = document.getElementById('image-preview');
+      if (this.files && this.files[0]) {
+        preview.textContent = `Selected file: ${this.files[0].name}`;
+      } else {
+        preview.textContent = '';
+      }
+    });
+  </script>
 {% endblock %}

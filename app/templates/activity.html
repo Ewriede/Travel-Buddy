@@ -10,23 +10,30 @@
     <div class="container mt-4">
         {% if activity %}
             <div class="card mb-3">
-                <div class="card-body">
-                    <h5 class="card-title">Establishment</h5>
-                    <p class="card-text">{{ activity.establishment }}</p>
-                </div>
-            </div>
+                <div class="row g-0">
+                    <div class="col-md-4">
+                        {% if activity.image_filename %}
+                            <img src="{{ url_for('static', filename='uploads/activities/' ~ activity.image_filename) }}"
+                                 class="img-fluid rounded-start"
+                                 alt="{{ activity.name }}">
+                        {% else %}
+                            <img src="{{ url_for('static', filename='imgs/no_img.png') }}"
+                                 class="img-fluid rounded-start"
+                                 alt="No Image Available">
+                        {% endif %}
+                    </div>
+                    <div class="col-md-8">
+                        <div class="card-body">
+                            <h5 class="card-title">Establishment</h5>
+                            <p class="card-text">{{ activity.establishment }}</p>
 
-            <div class="card mb-3">
-                <div class="card-body">
-                    <h5 class="card-title">Destination</h5>
-                    <p class="card-text">{{ activity.destination_activity.name }}</p>
-                </div>
-            </div>
+                            <h5 class="card-title">Destination</h5>
+                            <p class="card-text">{{ activity.destination_activity.name }}</p>
 
-            <div class="card mb-3">
-                <div class="card-body">
-                    <h5 class="card-title">Description</h5>
-                    <p class="card-text">{{ activity.description }}</p>
+                            <h5 class="card-title">Description</h5>
+                            <p class="card-text">{{ activity.description }}</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         {% else %}

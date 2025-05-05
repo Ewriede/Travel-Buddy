@@ -4,13 +4,22 @@ from flask import render_template, flash, redirect, url_for, request, jsonify
 from flask_login import login_user, logout_user, current_user, login_required
 import sqlalchemy as sa
 from flask_migrate import current
-
 from app import app, db
 from app.forms import LoginForm, RegistrationForm, EditProfileForm, \
     EmptyForm, PostForm, ResetPasswordRequestForm, ResetPasswordForm
 from app.models import User, Travelplan, Destination, Activities, ActivityToPlan
+import os
+from werkzeug.utils import secure_filename
 
+basedir = os.path.abspath(os.path.dirname(__file__))
 
+app.config['ACTIVITY_UPLOAD_FOLDER'] = os.path.join(basedir, 'static', 'uploads', 'activities')
+app.config['TRAVEL_PLAN_UPLOAD_FOLDER'] = os.path.join(basedir, 'static', 'uploads', 'travel_plans')
+
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 @app.route('/')
 @app.route('/index')
 def index():
@@ -80,17 +89,17 @@ def populate_db():
     db.session.add_all([destination_1, destination_2, destination_3])
     db.session.commit()
 
-    plan_1 = Travelplan(name="Swim School", time_needed="14", budget="1000", group_rec="4", owner=user_1, destination_plan=destination_1)
+    plan_1 = Travelplan(name="Swim School", time_needed="14", budget="1000", group_rec="4", image_filename="ithaca_pool.jpg", owner=user_1, destination_plan=destination_1)
     plan_2 = Travelplan(name="Shopping Spree", time_needed="3", budget="250", group_rec="3", owner=user_2, destination_plan=destination_2)
     plan_3 = Travelplan(name="From a Walk to a Ride", time_needed="31", budget="5000", group_rec="6", owner=user_3, destination_plan=destination_3)
     plan_4 = Travelplan(name="Skipping School", time_needed="2", budget="150", group_rec="2", owner=user_2, destination_plan=destination_1)
     db.session.add_all([plan_1, plan_2, plan_3, plan_4])
     db.session.commit()
 
-    activity_1 = Activities(name="swim", establishment="pool.exe", description="Cool Pool", destination_activity=destination_1)
+    activity_1 = Activities(name="swim", establishment="pool.exe", description="Cool Pool", image_filename="swimming.jpg", destination_activity=destination_1)
     activity_2 = Activities(name="walk", establishment="trail.exe", description="Cool Trail", destination_activity=destination_3)
     activity_3 = Activities(name="shop", establishment="shop.exe", description="Cool Shop", destination_activity=destination_2)
-    activity_4 = Activities(name="school", establishment="school.exe", description="Why?", destination_activity=destination_1)
+    activity_4 = Activities(name="school", establishment="school.exe", description="Why?", image_filename="ithaca_logo.png", destination_activity=destination_1)
     activity_5 = Activities(name="sled", establishment="sled.exe", description="Cool Sled", destination_activity=destination_3)
     activity_6 = Activities(name="Roller Coaster", establishment="Coaster.exe", description="Cool Coaster", destination_activity=destination_1)
     db.session.add_all([activity_1, activity_2, activity_3, activity_4, activity_5, activity_6])
@@ -175,33 +184,38 @@ def create_pack():
     destinations = Destination.query.all()
 
     if request.method == 'POST':
-        name = request.form['name']
-        budget = request.form['budget']
-        time_needed = request.form['time_needed']
-        group_rec = request.form['group_rec']
-        destination_id = request.form['destination']
-        activity_ids = request.form.getlist('activities')
+        image = request.files.get("image")
+        image_filename = None
 
+        if image and image.filename != '' and allowed_file(image.filename):
+            filename = secure_filename(image.filename)
+            folder = app.config['TRAVEL_PLAN_UPLOAD_FOLDER']
+            os.makedirs(folder, exist_ok=True)
+            filepath = os.path.join(folder, filename)
+            image.save(filepath)
+            image_filename = filename
+
+        # Create the Travelplan
         new_plan = Travelplan(
-            name=name,
-            budget=budget,
-            time_needed=time_needed,
-            group_rec=group_rec,
-            owner=current_user,
-            destination_id=destination_id
+            name=request.form['name'],
+            budget=request.form['budget'],
+            time_needed=request.form['time_needed'],
+            group_rec=request.form['group_rec'],
+            destination_id=request.form['destination'],
+            image_filename=image_filename,
+            user_id=current_user.id  # If your Travelplan model tracks who created it
         )
         db.session.add(new_plan)
         db.session.commit()
 
+        # Handle activities (can be multiple with same name 'activities')
+        activity_ids = request.form.getlist('activities')
         for activity_id in activity_ids:
-            activity = db.session.get(Activities, int(activity_id))
-            if activity:
-                join = ActivityToPlan(plan=new_plan, active=activity)
-                db.session.add(join)
+            link = ActivityToPlan(plan_id=new_plan.id, activity_id=activity_id)
+            db.session.add(link)
 
         db.session.commit()
-        flash('Plan added successfully.')
-        return redirect(url_for('index'))
+        return redirect(url_for('travel_packages'))
 
     return render_template('create_package.html', destinations=destinations)
 
@@ -225,25 +239,31 @@ def create_active():
     destinations = Destination.query.all()
 
     if request.method == 'POST':
-        name = request.form['name']
-        establishment = request.form['establishment']
-        description = request.form['description']
-        destination_id = request.form['destination']
+        image = request.files.get("image")
+        image_filename = None
+
+        if image and image.filename != '' and allowed_file(image.filename):
+            filename = secure_filename(image.filename)
+            folder = app.config['ACTIVITY_UPLOAD_FOLDER']
+            filepath = os.path.join(folder, filename)
+            os.makedirs(os.path.dirname(filepath), exist_ok=True)
+            image.save(filepath)
+            image_filename = filename
 
         new_activity = Activities(
-            name=name,
-            establishment=establishment,
-            description=description,
-            destination_id=destination_id
+            name=request.form['name'],
+            description=request.form['description'],
+            establishment=request.form['establishment'],
+            destination_id=request.form['destination'],
+            image_filename=image_filename
         )
         db.session.add(new_activity)
         db.session.commit()
-
-        db.session.commit()
-        flash('Plan added successfully.')
-        return redirect(url_for('index'))
+        return redirect(url_for('activities_list'))  # Adjust this route name if needed
 
     return render_template('create_activity.html', destinations=destinations)
+
+
 
 
 @app.route('/activities_list')

@@ -4,14 +4,14 @@
   <!-- Orange Header -->
   <header class="py-4" style="background-color: orange; color: white;">
     <div class="container text-center">
-      <h2>Create a New Travel Plan</h2>
+      <h2>Create a New Activity</h2>
     </div>
   </header>
 
   <!-- Form Content -->
   <div class="container mt-5">
     <div class="card shadow p-4">
-      <form method="POST">
+      <form method="POST" enctype="multipart/form-data">
         <div class="mb-3">
           <label for="name" class="form-label">Activity Name</label>
           <input type="text" class="form-control" id="name" name="name" required>
@@ -34,6 +34,12 @@
               <option value="{{ dest.id }}">{{ dest.name }}</option>
             {% endfor %}
           </select>
+        </div>
+
+        <!-- Image Upload -->
+        <div class="mb-3">
+          <label for="image" class="form-label">Activity Image</label>
+          <input type="file" class="form-control" id="image" name="image" accept="image/*">
         </div>
 
         <button type="submit" class="btn btn-warning w-100">Submit</button>

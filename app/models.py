@@ -57,6 +57,7 @@ class Travelplan(db.Model):
     time_needed: so.Mapped[int] = so.mapped_column()
     budget: so.Mapped[int] = so.mapped_column()
     group_rec: so.Mapped[int] = so.mapped_column()
+    image_filename = db.Column(db.String(200))
 
     user_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey('user.id'))
     owner: so.Mapped['User'] = so.relationship('User', back_populates='tpacks')
@@ -72,6 +73,7 @@ class Activities(db.Model):
     name: so.Mapped[str] = so.mapped_column(sa.String(140))
     establishment: so.Mapped[str] = so.mapped_column(sa.String(140))
     description: so.Mapped[str] = so.mapped_column(sa.String(140))
+    image_filename = db.Column(db.String(200))
 
     destination_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey('destination.id'))
     destination_activity: so.Mapped['Destination'] = so.relationship('Destination', back_populates='activity_des')

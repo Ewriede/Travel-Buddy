@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+
 {% block content %}
   <header class="py-4" style="background-color: orange; color: white;">
     <div class="container text-center">
@@ -33,8 +34,8 @@
         </div>
 
         <div class="col-md-3">
-            <label class="form-label">Max Time Needed (days)</label>
-            <input type="number" name="time_needed" class="form-control" value="{{ request.args.get('time_needed', '') }}">
+          <label class="form-label">Max Time Needed (days)</label>
+          <input type="number" name="time_needed" class="form-control" value="{{ request.args.get('time_needed', '') }}">
         </div>
 
         <div class="col-md-2">
@@ -50,6 +51,15 @@
       {% for travel_plans in travel_plans %}
         <div class="col-md-6 mb-3">
           <div class="card shadow-sm">
+            {% if travel_plans.image_filename %}
+              <img src="{{ url_for('static', filename='uploads/travel_plans/' + travel_plans.image_filename) }}"
+                   class="card-img-top" alt="Package Image"
+                   style="object-fit: cover; height: 200px;">
+            {% else %}
+              <img src="{{ url_for('static', filename='imgs/no_img.png') }}"
+                   class="card-img-top" alt="No Image Available"
+                   style="object-fit: cover; height: 200px;">
+            {% endif %}
             <div class="card-body">
               <h5 class="card-title">
                 <a href="{{ url_for('pack', plan=travel_plans.id) }}" class="text-decoration-none">

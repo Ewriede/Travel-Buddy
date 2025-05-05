@@ -10,7 +10,19 @@
     <div class="container mt-4">
         <ul class="list-group">
             {% for activity in activities %}
-                <li class="list-group-item">
+                <li class="list-group-item d-flex align-items-center">
+                    {% if activity.image_filename %}
+                        <img src="{{ url_for('static', filename='uploads/activities/' ~ activity.image_filename) }}"
+                             class="img-thumbnail me-3"
+                             style="width: 80px; height: 80px; object-fit: cover;"
+                             alt="{{ activity.name }}">
+                    {% else %}
+                        <img src="{{ url_for('static', filename='imgs/no_img.png') }}"
+                             class="img-thumbnail me-3"
+                             style="width: 80px; height: 80px; object-fit: cover;"
+                             alt="No Image">
+                    {% endif %}
+
                     <a href="{{ url_for('activity', active=activity.id) }}">
                         {{ activity.name }} at {{ activity.establishment }}
                     </a>
