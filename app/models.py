@@ -19,6 +19,7 @@ class User(db.Model, UserMixin):
     username: so.Mapped[str] = so.mapped_column(sa.String(64), index=True, unique=True)
     password_hash: so.Mapped[Optional[str]] = so.mapped_column(sa.String(256))
     about_me: so.Mapped[Optional[str]] = so.mapped_column(sa.String(140))
+    image_filename = db.Column(db.String(200))
 
     tpacks: so.WriteOnlyMapped['ActivityToPlan'] = so.relationship('Travelplan', back_populates='owner')
 

@@ -31,8 +31,18 @@
             </ul>
             <ul class="navbar-nav">
                 {% if current_user.is_authenticated %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('user_page', username=current_user.username) }}">Profile ({{ current_user.username }})</a>
+                    <li class="nav-item d-flex align-items-center">
+                        <img src="{% if current_user.image_filename %}
+                                    {{ url_for('static', filename='uploads/pfps/' ~ current_user.image_filename) }}
+                                  {% else %}
+                                    {{ url_for('static', filename='imgs/no_pfp.png') }}
+                                  {% endif %}"
+                             alt="Profile Picture"
+                             class="rounded-circle me-2"
+                             style="height: 32px; width: 32px; object-fit: cover;">
+                        <a class="nav-link" href="{{ url_for('user_page', username=current_user.username) }}">
+                            Profile ({{ current_user.username }})
+                        </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>

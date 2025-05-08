@@ -288,11 +288,32 @@ def edit_profile():
     if request.method == 'POST':
         current_user.username = request.form['username']
         current_user.about_me = request.form['about_me']
+
+        # Handle image upload
+        image = request.files.get('image')
+        if image and image.filename != '' and allowed_file(image.filename):
+            filename = secure_filename(image.filename)
+            folder = os.path.join(app.static_folder, 'uploads/pfps')
+            os.makedirs(folder, exist_ok=True)
+            filepath = os.path.join(folder, filename)
+            image.save(filepath)
+            current_user.image_filename = filename
+
+        # Handle image deletion
+        if request.form.get('remove_picture'):
+            if current_user.image_filename:
+                # Remove file if it exists
+                old_path = os.path.join(app.static_folder, 'uploads/pfps', current_user.image_filename)
+                if os.path.exists(old_path):
+                    os.remove(old_path)
+                current_user.image_filename = None
+
         db.session.commit()
-        flash('Your profile has been updated.')
+        flash('Profile updated successfully!')
         return redirect(url_for('user_page', username=current_user.username))
 
     return render_template('edit_profile.html', user=current_user)
+
 
 @app.route('/save_package/<int:plan_id>', methods=['POST'])
 @login_required
